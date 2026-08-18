@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ASP Demand Prediction</title>
+    <style>
+        :root {
+            --bg: #0f1419;
+            --card: #1b2330;
+            --ink: #e6edf3;
+            --muted: #8b98a5;
+            --accent: #3b82f6;
+            --ok: #22c55e;
+            --err: #ef4444;
+            --line: #2a3441;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font: 14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        }
+
+        header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        header h1 {
+            font-size: 18px;
+            margin: 0;
+        }
+
+        header .sub {
+            color: var(--muted);
+        }
+
+        .runbar {
+            margin-left: auto;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        main {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 16px;
+            padding: 24px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .card h2 {
+            font-size: 14px;
+            margin: 0 0 12px;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            color: var(--muted);
+            margin: 8px 0 2px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 7px 9px;
+            background: #0f1622;
+            color: var(--ink);
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            color-scheme: dark;
+            /* dark native date-picker popup + icon */
+        }
+
+        .row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .row>* {
+            flex: 1;
+        }
+
+        .chk {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .chk input {
+            width: auto;
+        }
+
+        .runrow {
+            display: flex;
+            gap: 6px;
+            align-items: stretch;
+        }
+
+        .refreshrun {
+            width: auto;
+            margin: 0;
+            padding: 7px 11px;
+            background: #334155;
+            flex: 0 0 auto;
+        }
+
+        button {
+            margin-top: 12px;
+            width: 100%;
+            padding: 9px;
+            background: var(--accent);
+            color: #fff;
+            border: 0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        button:hover {
+            filter: brightness(1.1);
+        }
+
+        button:disabled {
+            opacity: .5;
+            cursor: default;
+        }
+
+        .out {
+            margin-top: 12px;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: var(--muted);
+            max-height: 220px;
+            overflow: auto;
+        }
+
+        .out.ok {
+            color: var(--ok);
+        }
+
+        .out.err {
+            color: var(--err);
+        }
+
+        .viz {
+            grid-column: 1/-1;
+        }
+
+        .log {
+            font-family: ui-monospace, Menlo, Consolas, monospace;
+            font-size: 11px;
+            max-height: 120px;
+            overflow: auto;
+            background: #0f1622;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 6px 8px;
+            margin-bottom: 10px;
+        }
+
+        .logline {
+            color: var(--muted);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .logline.ok {
+            color: var(--ok);
+        }
+
+        .logline.err {
+            color: var(--err);
+        }
+
+        iframe {
+            width: 100%;
+            height: 960px;
+            /* fits the default 900px chart (incl. range slider); JS tracks custom heights */
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        td,
+        th {
+            border-bottom: 1px solid var(--line);
+            padding: 3px 6px;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>ASP Demand Prediction</h1>
+        <span class="sub">control plane · <a href="/docs" style="color:var(--accent)">API docs</a></span>
+        <div class="runbar">
+            <button id="refreshRuns" style="width:auto;margin:0;background:#334155">↻ refresh runs</button>
+        </div>
+    </header>
+
+    <main>
+        <section class="card">
+            <h2>1 · Generate date info</h2>
+            <div class="row">
+                <div><label>start year</label><input id="cal_start" type="number" value="2020"></div>
+                <div><label>end year</label><input id="cal_end" type="number" value="2035"></div>
+            </div>
+            <button data-act="calendar">Generate calendar</button>
+            <div class="out" id="out_calendar"></div>
+        </section>
+
+        <section class="card">
+            <h2>2 · Preprocess</h2>
+            <div class="row">
+                <div><label>start</label><input id="pp_start" type="date" value="2025-05-06"></div>
+                <div><label>end</label><input id="pp_end" type="date" value="2025-05-06"></div>
+            </div>
+            <label>timezone</label>
+            <select id="pp_tz">
+                <option value="">default (JST)</option>
+                <option>Asia/Tokyo</option>
+                <option>UTC</option>
+            </select>
+            <label>raw log URI (blank = $ASP_RAW_LOG_URI) \n e.g. data/aplb-access-log or s3://bucket/prefix</label>
+            <input id="pp_uri" value="s3://aplb-access-log">
+            <div class="row">
+                <div><label>workers</label><input id="pp_workers" type="number" placeholder="auto"></div>
+                <div class="chk"><input id="pp_refresh" type="checkbox"><label style="margin:0">refresh cache</label>
+                </div>
+            </div>
+            <button data-act="preprocess">Run preprocess (job)</button>
+            <button id="pp_cancel" style="display:none;background:var(--err)">Cancel</button>
+            <div class="out" id="out_preprocess"></div>
+        </section>
+
+        <section class="card">
+            <h2>3 · Train</h2>
+            <label>run dir</label>
+            <div class="runrow"><select id="tr_run" class="runsel"></select><button type="button"
+                    class="refreshrun" title="refresh run list">↻</button></div>
+            <label>granularity</label><select id="tr_gran" class="gran"></select>
+            <button data-act="train">Train (job)</button>
+            <div class="out" id="out_train"></div>
+        </section>
+
+        <section class="card">
+            <h2>4 · Predict</h2>
+            <label>run dir</label>
+            <div class="runrow"><select id="pr_run" class="runsel"></select><button type="button"
+                    class="refreshrun" title="refresh run list">↻</button></div>
+            <label>granularity</label><select id="pr_gran" class="gran"></select>
+            <label>mode</label>
+            <select id="pr_mode">
+                <option value="horizon">horizon (future)</option>
+                <option value="window">date window (future)</option>
+                <option value="backtest">backtest (vs actual)</option>
+            </select>
+            <div id="pr_horizon_box"><label>horizon (buckets)</label><input id="pr_horizon" type="number" value="24">
+            </div>
+            <div id="pr_window_box" style="display:none">
+                <div class="row">
+                    <div><label>from</label><input id="pr_from" type="date"></div>
+                    <div><label>to</label><input id="pr_to" type="date"></div>
+                </div>
+            </div>
+            <button data-act="predict">Predict</button>
+            <div class="out" id="out_predict"></div>
+        </section>
+
+        <section class="card">
+            <h2>5 · Visualize</h2>
+            <label>run dir</label>
+            <div class="runrow"><select id="vz_run" class="runsel"></select><button type="button"
+                    class="refreshrun" title="refresh run list">↻</button></div>
+            <label>granularity</label><select id="vz_gran" class="gran"></select>
+            <label>kind</label>
+            <select id="vz_kind">
+                <option value="forecast">forecast</option>
+                <option value="backtest">backtest</option>
+            </select>
+            <label>height (px)</label><input id="vz_height" type="number" value="900">
+            <button data-act="visualize">Render chart</button>
+            <div class="out" id="out_visualize"></div>
+        </section>
+
+        <section class="card viz">
+            <h2>Activity log &amp; chart</h2>
+            <div class="log" id="log"></div>
+            <iframe id="chart" title="forecast chart"></iframe>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

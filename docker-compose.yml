@@ -1,0 +1,20 @@
+# Local orchestration for the ASP demand image.
+#   docker compose up api          # serve the API + UI on :8000 (/ui, /docs)
+#
+# REGISTRY/TAG flow into the image name so `docker compose build` + `push` target a registry.
+x-image: &image ${REGISTRY:-asp-demand}:${TAG:-latest}
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: *image
+    env_file:
+      - path: .env
+        required: false
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data  # runs (parquet, models, forecasts) live under data/runs
+    restart: unless-stopped
