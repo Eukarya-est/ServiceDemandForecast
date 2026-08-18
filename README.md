@@ -26,8 +26,8 @@ Goal to achieve:
 2. While the Canvas offers the convenience of automation and infrastructure management, it entails a loss of control over the model
    
    * As shown below, despite discrepancies between predicted and actual values ​​during the year-end/New Year holidays (based on two years of training data) and Golden Week (based on one year of training data), it was not possible to control for exogenous variables:
-   * ❗actual values masked; shape illustrative![new-year-w-2year-data-learning.png](.\.imgs\new-year-w-2year-data-learning.png)
-   * ❗actual values masked; shape illustrative![jp-goldenweak-w-1year-data-learning.png](.\.imgs\jp-goldenweak-w-1year-data-learning.png)
+   * ❗actual values masked; shape illustrative![new-year-w-2year-data-learning.png](./.imgs/new-year-w-2year-data-learning.png)
+   * ❗actual values masked; shape illustrative![jp-goldenweak-w-1year-data-learning.png](./.imgs/jp-goldenweak-w-1year-data-learning.png)
 
 ## Ⅲ. Trade-off
 
@@ -163,7 +163,7 @@ date,holiday_name,weekday,is_weekend,is_holiday,is_business_day,day_before_holid
 #### 3. Example of the actual running screen
 
 ❗actual values masked; shape illustrative
-![operation-screen-example.png](.\.imgs\operation-screen-example.png)
+![operation-screen-example.png](./.imgs/operation-screen-example.png)
 
 ## Ⅴ. Performance comparison; LightGBM vs. Canvas
 
@@ -185,15 +185,15 @@ Forecast period: April–June 2025
 
 LightGBM outperformed other models across general accuracy metrics (MAPE, WAPE, MASE). Notably, Canvas failed to even surpass the simple forecast baseline (1.0) in terms of MASE. However, since the project's actual KPI was prediction accuracy for peak RPS (requests per second)—a metric where Canvas held a slight edge due to its sensitivity to peak errors—LightGBM was ultimately selected; this decision was driven by considerations of cost and scalability, as well as Canvas's inability to capture specific predictive trends.
 
-- Actual Measurement vs. Both Models (P50)![202504-202506_1day_p50.png](.\.imgs\202504-202506_1day_p50.png)
+- Actual Measurement vs. Both Models (P50)![202504-202506_1day_p50.png](./.imgs/202504-202506_1day_p50.png)
 
 - Actual Measurement vs. Both Models (P90)
-  
-  ![202504-202506_1day_p90.png](.\.imgs\202504-202506_1day_p90.png)
+  ❗actual values masked; shape illustrative
+  ![202504-202506_1day_p90.png](./.imgs/202504-202506_1day_p90.png)
 
 - Actual Measurement vs. Both Models (P95)
-  
-  ![202504-202506_1day_p95.png](.\.imgs\202504-202506_1day_p95.png)
+  ❗actual values masked; shape illustrative
+  ![202504-202506_1day_p95.png](./.imgs/202504-202506_1day_p95.png)
 
 ### Ⅵ. Result
 
@@ -216,4 +216,5 @@ Example of the team member's work result:
 
 - Granularity (Training data interval): 15 min
 
-![240901-251205_forecast_15min.png](.\.imgs\240901-251205_forecast_15min.png)
+❗actual values masked; shape illustrative
+![240901-251205_forecast_15min.png](./.imgs/240901-251205_forecast_15min.png)
