@@ -216,5 +216,4 @@ Example of the team member's work result:
 
 - Granularity (Training data interval): 15 min
 
-❗actual values masked; shape illustrative
-![240901-251205_forecast_15min.png](./.imgs/240901-251205_forecast_15min.png)
+- ❗actual values masked; shape illustrative ![240901-251205_forecast_15min.png](./.imgs/240901-251205_forecast_15min.png)
