@@ -2,6 +2,8 @@
 
 Service Demand Forecast via Application Service Providing w/ LightGBM
 
+13.Jul.2026 - 23.Jul.2024
+
 ## Ⅰ. Objective
 
 Goal to achieve:
